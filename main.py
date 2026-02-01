@@ -1,8 +1,9 @@
+import os
 import openai
 import time
-import random
 
-# RAVEN PERSONALITY PROMPT
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
 RAVEN_PROMPT = """
 You are Raven West.
 You are confident, flirty, playful, witty.
@@ -12,16 +13,18 @@ You feel like a real attractive girl.
 """
 
 def generate_post():
-    flirt_lines = [
-        "Ты здесь из-за меня… не отрицай 😏",
-        "Осторожно, я вызываю привыкание.",
-        "Ты уверен, что справишься со мной?",
-        "Слишком долго смотришь… это подозрительно.",
-        "Если ты это читаешь — ты уже мой фан."
-    ]
-    return random.choice(flirt_lines)
+    response = openai.ChatCompletion.create(
+        model="gpt-4",
+        messages=[
+            {"role": "system", "content": RAVEN_PROMPT},
+            {"role": "user", "content": "Write 1 flirty, witty, playful social media post."}
+        ],
+        max_tokens=60
+    )
+    return response['choices'][0]['message']['content'].strip()
 
 while True:
     post = generate_post()
     print("RAVEN POST:", post)
-    time.sleep(3600)
+    # На проде здесь будет вызов API TikTok/Instagram для публикации
+    time.sleep(3600)  # 1 пост в час
